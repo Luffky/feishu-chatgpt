@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,8 +14,6 @@ import (
 	"github.com/spf13/pflag"
 
 	sdkginext "github.com/larksuite/oapi-sdk-gin"
-
-	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher"
 )
 
 var (
@@ -32,12 +28,12 @@ func main() {
 	gpt := openai.NewChatGPT(*config)
 	handlers.InitHandlers(gpt, *config)
 
-	eventHandler := dispatcher.NewEventDispatcher(
-		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey).
-		OnP2MessageReceiveV1(handlers.Handler).
-		OnP2MessageReadV1(func(ctx context.Context, event *larkim.P2MessageReadV1) error {
-			return handlers.ReadHandler(ctx, event)
-		})
+	//eventHandler := dispatcher.NewEventDispatcher(
+	//	config.FeishuAppVerificationToken, config.FeishuAppEncryptKey).
+	//	OnP2MessageReceiveV1(handlers.Handler).
+	//	OnP2MessageReadV1(func(ctx context.Context, event *larkim.P2MessageReadV1) error {
+	//		return handlers.ReadHandler(ctx, event)
+	//	})
 
 	cardHandler := larkcard.NewCardActionHandler(
 		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey,
