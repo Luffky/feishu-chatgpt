@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 	"io/ioutil"
 	"log"
@@ -24,6 +23,7 @@ import (
 var (
 	cfg = pflag.StringP("config", "c", "./config.yaml", "apiserver config file path.")
 )
+
 
 func main() {
 	pflag.Parse()
@@ -56,8 +56,7 @@ func main() {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		log.Println(string(bodyBytes))
-		fmt.Printf(string(bodyBytes))
+		log.Printf(string(bodyBytes))
 		c.JSON(200, gin.H{
 			"message": string(bodyBytes),
 		})
