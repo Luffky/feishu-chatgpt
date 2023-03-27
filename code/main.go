@@ -1,9 +1,9 @@
 package main
 
 import (
-	"io/ioutil"
+	"context"
+	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 	"log"
-	"net/http"
 	"start-feishubot/handlers"
 	"start-feishubot/initialization"
 	"start-feishubot/services/openai"
@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/pflag"
 
 	sdkginext "github.com/larksuite/oapi-sdk-gin"
+
+	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher"
 )
 
 var (
@@ -28,12 +30,12 @@ func main() {
 	gpt := openai.NewChatGPT(*config)
 	handlers.InitHandlers(gpt, *config)
 
-	//eventHandler := dispatcher.NewEventDispatcher(
-	//	config.FeishuAppVerificationToken, config.FeishuAppEncryptKey).
-	//	OnP2MessageReceiveV1(handlers.Handler).
-	//	OnP2MessageReadV1(func(ctx context.Context, event *larkim.P2MessageReadV1) error {
-	//		return handlers.ReadHandler(ctx, event)
-	//	})
+	eventHandler := dispatcher.NewEventDispatcher(
+		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey).
+		OnP2MessageReceiveV1(handlers.Handler).
+		OnP2MessageReadV1(func(ctx context.Context, event *larkim.P2MessageReadV1) error {
+			return handlers.ReadHandler(ctx, event)
+		})
 
 	cardHandler := larkcard.NewCardActionHandler(
 		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey,
@@ -47,7 +49,7 @@ func main() {
 	})
 
 	r.POST("/webhook/event",
-		echo)
+		sdkginext.NewEventHandlerFunc(eventHandler))
 	r.POST("/webhook/card",
 		sdkginext.NewCardActionHandlerFunc(
 			cardHandler))
@@ -57,17 +59,4 @@ func main() {
 		log.Fatalf("failed to start server: %v", err)
 	}
 
-}
-
-func echo(c *gin.Context) {
-	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		log.Println(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	log.Printf(string(bodyBytes))
-	c.JSON(200, gin.H{
-		"message": string(bodyBytes),
-	})
 }
