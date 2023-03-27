@@ -157,8 +157,6 @@ func judgeMsgType(event *larkim.P2MessageReceiveV1) (string, error) {
 }
 
 func (m MessageHandler) msgReceivedHandler(ctx context.Context, event *larkim.P2MessageReceiveV1) error {
-	jsonStr, _ := json.Marshal(event)
-	fmt.Printf(string(jsonStr))
 	handlerType := judgeChatType(event)
 	if handlerType == "otherChat" {
 		fmt.Println("unknown chat type")
