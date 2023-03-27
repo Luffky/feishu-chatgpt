@@ -49,21 +49,9 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.POST("/webook/echo", func(c *gin.Context) {
-		bodyBytes, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			log.Println(err)
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		log.Printf(string(bodyBytes))
-		c.JSON(200, gin.H{
-			"message": string(bodyBytes),
-		})
-	})
 
 	r.POST("/webhook/event",
-		sdkginext.NewEventHandlerFunc(eventHandler))
+		echo)
 	r.POST("/webhook/card",
 		sdkginext.NewCardActionHandlerFunc(
 			cardHandler))
@@ -73,4 +61,17 @@ func main() {
 		log.Fatalf("failed to start server: %v", err)
 	}
 
+}
+
+func echo(c *gin.Context) {
+	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	log.Printf(string(bodyBytes))
+	c.JSON(200, gin.H{
+		"message": string(bodyBytes),
+	})
 }
