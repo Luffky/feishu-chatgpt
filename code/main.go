@@ -47,6 +47,12 @@ func main() {
 			"message": "pong",
 		})
 	})
+	r.GET("/douplus/track", func(c *gin.Context) {
+		log.Printf(c.Request.RequestURI)
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 
 	r.POST("/webhook/event",
 		sdkginext.NewEventHandlerFunc(eventHandler))
