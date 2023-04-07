@@ -49,6 +49,7 @@ func main() {
 	})
 	r.GET("/douplus/track", func(c *gin.Context) {
 		log.Printf(c.Request.URL.RawQuery)
+		log.Printf(c.Request.URL.RawPath)
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
